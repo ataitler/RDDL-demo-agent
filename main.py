@@ -1,4 +1,5 @@
 import sys
+sys.path.append('/usr/share/pyRDDLGym')
 
 from pyRDDLGym import RDDLEnv
 from pyRDDLGym import ExampleManager
