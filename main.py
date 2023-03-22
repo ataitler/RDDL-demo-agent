@@ -3,7 +3,7 @@ import sys
 
 from pyRDDLGym import RDDLEnv
 from pyRDDLGym import ExampleManager
-from pyRDDLGym.Policies.Agents import RandomAgent
+from pyRDDLGym.Policies.Agents import NoOpAgent
 
 
 # from pyRDDLGym.Visualizer.MovieGenerator import MovieGenerator
@@ -30,7 +30,7 @@ def main(env, inst, method_name=None, episodes=1):
     # movie_gen=MovieGenerator(frames_path, ENV, 200), movie_per_episode=True)
 
     # set up an example aget
-    agent = RandomAgent(action_space=myEnv.action_space,
+    agent = NoOpAgent(action_space=myEnv.action_space,
                         num_actions=myEnv.numConcurrentActions)
 
     for episode in range(episodes):
