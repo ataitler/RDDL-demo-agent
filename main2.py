@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/usr/share/pyRDDLGym')
+# sys.path.append('/usr/share/pyRDDLGym')
 
 from pyRDDLGym import RDDLEnv
 from pyRDDLGym import ExampleManager
@@ -60,12 +60,21 @@ if __name__ == "__main__":
     print(args)
     method_name = None
     episodes = 1
+    if len(args) == 2:
+        if args[0] == '-h':
+            print('python GymExample.py <domain> <instance> <method name> <num episodes>')
     if len(args) < 3:
         env, inst = 'HVAC', '1'
+    elif len(args) < 4:
+        env, inst = args[1:3]
     elif len(args) < 5:
         env, inst, method_name = args[1:4]
     else:
         env, inst, method_name, episodes = args[1:5]
+        try:
+            episodes = int(episodes)
+        except:
+            raise ValueError("episode must be an integer value argument, received: " + episodes)
     main(env, inst, method_name, episodes)
 
     #           0      1   2  3    4

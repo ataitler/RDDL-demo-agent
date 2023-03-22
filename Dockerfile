@@ -1,6 +1,6 @@
 FROM python:3.10
 
-WORKDIR /usr/src/RDDLagent
+WORKDIR /usr/src/RDDL-demo-agent
 
 # copy all the files to the container
 COPY . .
@@ -9,14 +9,13 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # define the port number the container should expose
-EXPOSE 5000
+# EXPOSE 5000
 
-# run the command
-CMD ["python", "./main2.py"]
+# entry point for the docker, this will always run with the docker
+ENTRYPOINT ["python", "./main2.py"]
 
-# docker run -i -t -v $(pwd):/usr/share/nginx/html:ro rddl-random-agent /bin/bash
-# docker run -i -t -v /home/test/Documents/pyRDDLGym-main:/usr/share/pyRDDLGym -e PATH="$PATH:/usr/share/pyRDDLGym" rddl-random-agent /bin/bash
-# docker run -i -t -v /home/test/Documents/pyRDDLGym-logging4comp:/usr/share/pyRDDLGym -e PATH="$PATH:/usr/share/pyRDDLGym" rddl-random-agent-volume /bin/bash
+# run the command, this serves as default args to the entrypoint
+CMD []
 
-# docker build -t rddl-random-agent-volume .
+
 
