@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # EXPOSE 5000
 
 # entry point for the docker, this will always run with the docker
-ENTRYPOINT ["python", "./main2.py"]
+ENTRYPOINT ["python", "./main.py"]
 
 # run the command, this serves as default args to the entrypoint
 CMD []
