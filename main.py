@@ -1,18 +1,21 @@
 import sys
-# sys.path.append('/usr/share/pyRDDLGym')
 
 from pyRDDLGym import RDDLEnv
 from pyRDDLGym import ExampleManager
+
+############################################################
+# IMPORT THE AGENT AND OTHER DEPENDENCIES OF YOUR SOLUTION #
+############################################################
 from pyRDDLGym.Policies.Agents import NoOpAgent
 
 
-# from pyRDDLGym.Visualizer.MovieGenerator import MovieGenerator
-
+#########################
+# MAIN INTERACTION LOOP #
+#########################
 def main(env, inst, method_name=None, episodes=1):
     print(f'preparing to launch instance {inst} of domain {env}...')
 
     # get the environment info
-    # ExampleManager.RebuildExamples()
     EnvInfo = ExampleManager.GetEnvInfo(env)
 
     # set up the environment class, choose instance 0 because every example has at least one example instance
@@ -24,12 +27,7 @@ def main(env, inst, method_name=None, episodes=1):
                             log=log,
                             simlogname=method_name)
 
-    # set up the environment visualizer
-    # frames_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Visualizer', 'Frames')
-    myEnv.set_visualizer(EnvInfo.get_visualizer())
-    # movie_gen=MovieGenerator(frames_path, ENV, 200), movie_per_episode=True)
-
-    # set up an example aget
+    # set up the agent object:
     agent = NoOpAgent(action_space=myEnv.action_space,
                         num_actions=myEnv.numConcurrentActions)
 
@@ -37,10 +35,16 @@ def main(env, inst, method_name=None, episodes=1):
         total_reward = 0
         state = myEnv.reset()
         for step in range(myEnv.horizon):
-            # myEnv.render()
+
+            ##################################################
+            # change following line for your sampling method #
+            ##################################################
             action = agent.sample_action()
+
             next_state, reward, done, info = myEnv.step(action)
             total_reward += reward
+
+            # prints can be removed for final submission
             print()
             print(f'step       = {step}')
             print(f'state      = {state}')
@@ -50,11 +54,16 @@ def main(env, inst, method_name=None, episodes=1):
             state = next_state
             if done:
                 break
-        print(f'episode {episode} ended with reward {total_reward}')
+        print(f'episode {episode+1} ended with reward {total_reward}')
 
     myEnv.close()
+    # CLEAN UP ANY RESOURCES YOU HAVE USED
 
 
+
+##########################################
+# DO NOT CHANGE THIS PART OF THE CODE!!! #
+##########################################
 if __name__ == "__main__":
     args = sys.argv
     print(args)
@@ -77,5 +86,3 @@ if __name__ == "__main__":
             raise ValueError("episode must be an integer value argument, received: " + episodes)
     main(env, inst, method_name, episodes)
 
-    #           0      1   2  3    4
-    # python main2.py HVAC 1 name iters
