@@ -9,7 +9,8 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # entry point for the docker, this will always run with the docker
-ENTRYPOINT ["python", "./main.py"]
+# must be FULL PATH for singularity compatibility
+ENTRYPOINT ["python", "/usr/src/RDDL-demo-agent/main.py"]
 
 # run the command, this serves as default args to the entrypoint
 CMD []

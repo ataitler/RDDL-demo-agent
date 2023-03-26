@@ -1,4 +1,5 @@
 import sys
+import time
 
 from pyRDDLGym import RDDLEnv
 from pyRDDLGym import ExampleManager
@@ -26,6 +27,7 @@ def main(env, inst, method_name=None, episodes=1):
                             debug=False,
                             log=log,
                             simlogname=method_name)
+    budget = myEnv.Budget
 
     # set up the agent object:
     agent = NoOpAgent(action_space=myEnv.action_space,
@@ -34,30 +36,41 @@ def main(env, inst, method_name=None, episodes=1):
     for episode in range(episodes):
         total_reward = 0
         state = myEnv.reset()
+        start_time = time.time()
         for step in range(myEnv.horizon):
 
-            ##################################################
-            # change following line for your sampling method #
-            ##################################################
+            ######################################################
+            # change the following line for your sampling method #
+            ######################################################
             action = agent.sample_action()
 
             next_state, reward, done, info = myEnv.step(action)
             total_reward += reward
 
-            # prints can be removed for final submission
+            # prints should be removed for final submission
             print()
             print(f'step       = {step}')
             print(f'state      = {state}')
             print(f'action     = {action}')
             print(f'next state = {next_state}')
             print(f'reward     = {reward}')
+
             state = next_state
+
             if done:
                 break
-        print(f'episode {episode+1} ended with reward {total_reward}')
+            timer = time.time()-start_time
+            if timer >= budget:
+                break
+
+        print(f'episode {episode+1} ended with reward {total_reward} after {timer} seconds')
 
     myEnv.close()
-    # CLEAN UP ANY RESOURCES YOU HAVE USED
+
+    ########################################
+    # CLEAN UP ANY RESOURCES YOU HAVE USED #
+    ########################################
+    # clean up...
 
 
 
