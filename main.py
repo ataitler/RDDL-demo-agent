@@ -1,18 +1,26 @@
 import sys
+import signal
 import time
+sys.path.append('/home/test/pyRDDLGym')
 
 from pyRDDLGym import RDDLEnv
 from pyRDDLGym import ExampleManager
+from pyRDDLGym.Policies.Agents import NoOpAgent, RandomAgent
 
 ############################################################
 # IMPORT THE AGENT AND OTHER DEPENDENCIES OF YOUR SOLUTION #
+
+
+
+
 ############################################################
-from pyRDDLGym.Policies.Agents import NoOpAgent
 
 
-#########################
+def signal_handler(signum, frame):
+    raise Exception("Timed out!")
+
+
 # MAIN INTERACTION LOOP #
-#########################
 def main(env, inst, method_name=None, episodes=1):
     print(f'preparing to launch instance {inst} of domain {env}...')
 
@@ -29,25 +37,56 @@ def main(env, inst, method_name=None, episodes=1):
                             simlogname=method_name)
     budget = myEnv.Budget
 
-    # set up the agent object:
-    agent = NoOpAgent(action_space=myEnv.action_space,
+    # default noop agent, do not change
+    defaultAgent = NoOpAgent(action_space=myEnv.action_space,
                         num_actions=myEnv.numConcurrentActions)
+
+    ################################################################
+    # Initialize your agent here:
+    agent = RandomAgent(action_space=myEnv.action_space,
+                        num_actions=myEnv.numConcurrentActions)
+
+    ################################################################
+
+
+
+    budget = 6
+    signal.signal(signal.SIGALRM, signal_handler)
 
     for episode in range(episodes):
         total_reward = 0
         state = myEnv.reset()
-        start_time = time.time()
+        # start_time = time.time()
+        timed_out = False
+        elapsed = budget
         for step in range(myEnv.horizon):
 
-            ######################################################
-            # change the following line for your sampling method #
-            ######################################################
-            action = agent.sample_action()
+            if not timed_out:
+                signal.setitimer(signal.ITIMER_REAL, elapsed)
+                try:
+                    start = time.time()
+                    #################################################################
+                    # replace the following line of code with your agent call
+                    action = agent.sample_action()
+                    time.sleep(0.1)
+
+
+                    #################################################################
+                    finish = time.time()
+                except:
+                    print('Timed out!')
+                    action = defaultAgent.sample_action()
+                    timed_out = True
+                    elapsed = 0
+                if not timed_out:
+                    elapsed = elapsed - (finish-start)
+                    print(elapsed)
+            else:
+                action = defaultAgent.sample_action()
 
             next_state, reward, done, info = myEnv.step(action)
             total_reward += reward
 
-            # prints should be removed for final submission
             print()
             print(f'step       = {step}')
             print(f'state      = {state}')
@@ -59,24 +98,19 @@ def main(env, inst, method_name=None, episodes=1):
 
             if done:
                 break
-            timer = time.time()-start_time
-            if timer >= budget:
-                break
 
-        print(f'episode {episode+1} ended with reward {total_reward} after {timer} seconds')
+        print(f'episode {episode+1} ended with reward {total_reward} after {budget-elapsed} seconds')
 
     myEnv.close()
 
     ########################################
     # CLEAN UP ANY RESOURCES YOU HAVE USED #
+
+
     ########################################
-    # clean up...
 
 
-
-##########################################
-# DO NOT CHANGE THIS PART OF THE CODE!!! #
-##########################################
+# CLI interface, DO NOT CHANGE
 if __name__ == "__main__":
     args = sys.argv
     print(args)
