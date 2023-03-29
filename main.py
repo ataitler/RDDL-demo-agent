@@ -4,7 +4,7 @@ import time
 
 from pyRDDLGym import RDDLEnv
 from pyRDDLGym import ExampleManager
-from pyRDDLGym.Policies.Agents import NoOpAgent, RandomAgent
+from pyRDDLGym.Policies.Agents import NoOpAgent
 
 ############################################################
 # IMPORT THE AGENT AND OTHER DEPENDENCIES OF YOUR SOLUTION #
