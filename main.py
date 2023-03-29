@@ -1,7 +1,6 @@
 import sys
 import signal
 import time
-sys.path.append('/home/test/pyRDDLGym')
 
 from pyRDDLGym import RDDLEnv
 from pyRDDLGym import ExampleManager
@@ -43,24 +42,25 @@ def main(env, inst, method_name=None, episodes=1):
 
     ################################################################
     # Initialize your agent here:
-    agent = RandomAgent(action_space=myEnv.action_space,
+    # remove the noop agent:
+    agent = NoOpAgent(action_space=myEnv.action_space,
                         num_actions=myEnv.numConcurrentActions)
+
 
     ################################################################
 
 
-
-    budget = 6
     signal.signal(signal.SIGALRM, signal_handler)
 
     for episode in range(episodes):
         total_reward = 0
         state = myEnv.reset()
-        # start_time = time.time()
         timed_out = False
         elapsed = budget
+        finish = start = 0
         for step in range(myEnv.horizon):
 
+            # action selection:
             if not timed_out:
                 signal.setitimer(signal.ITIMER_REAL, elapsed)
                 try:
@@ -68,19 +68,19 @@ def main(env, inst, method_name=None, episodes=1):
                     #################################################################
                     # replace the following line of code with your agent call
                     action = agent.sample_action()
-                    time.sleep(0.1)
+
 
 
                     #################################################################
                     finish = time.time()
                 except:
                     print('Timed out!')
+                    print('This episode will continue with default actions!')
                     action = defaultAgent.sample_action()
                     timed_out = True
                     elapsed = 0
                 if not timed_out:
                     elapsed = elapsed - (finish-start)
-                    print(elapsed)
             else:
                 action = defaultAgent.sample_action()
 
@@ -110,7 +110,7 @@ def main(env, inst, method_name=None, episodes=1):
     ########################################
 
 
-# CLI interface, DO NOT CHANGE
+# Command line interface, DO NOT CHANGE
 if __name__ == "__main__":
     args = sys.argv
     print(args)
