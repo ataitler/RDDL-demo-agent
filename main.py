@@ -9,7 +9,7 @@ from pyRDDLGym.Policies.Agents import NoOpAgent
 
 ############################################################
 # IMPORT THE AGENT AND OTHER DEPENDENCIES OF YOUR SOLUTION #
-
+from MyAgent.Agent import NoOpAgent as MyRDDLAgent
 
 
 
@@ -44,7 +44,7 @@ def main(env, inst, method_name=None, episodes=1):
     ################################################################
     # Initialize your agent here:
     # remove the noop agent:
-    agent = NoOpAgent(action_space=myEnv.action_space,
+    agent = MyRDDLAgent(action_space=myEnv.action_space,
                         num_actions=myEnv.numConcurrentActions)
 
 
