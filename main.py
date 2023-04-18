@@ -43,7 +43,6 @@ def main(env, inst, method_name=None, episodes=1):
 
     ################################################################
     # Initialize your agent here:
-    # remove the noop agent:
     agent = MyRDDLAgent(action_space=myEnv.action_space,
                         num_actions=myEnv.numConcurrentActions)
 
