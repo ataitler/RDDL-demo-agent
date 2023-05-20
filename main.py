@@ -1,11 +1,14 @@
 import sys
 import signal
 import time
-# sys.path.append('/home/test/pyRDDLGym')
+sys.path.append('/home/test/pyRDDLGym')
 
 from pyRDDLGym import RDDLEnv
 from pyRDDLGym import ExampleManager
 from pyRDDLGym.Policies.Agents import NoOpAgent
+
+# for JAX backend:
+# from pyRDDLGym.Core.Jax.JaxRDDLSimulator import JaxRDDLSimulator
 
 ############################################################
 # IMPORT THE AGENT AND OTHER DEPENDENCIES OF YOUR SOLUTION #
@@ -15,7 +18,7 @@ from MyAgent.Agent import NoOpAgent as MyRDDLAgent
 
 ############################################################
 
-
+HOUR = 3600
 def signal_handler(signum, frame):
     raise Exception("Timed out!")
 
@@ -32,39 +35,52 @@ def main(env, inst, method_name=None, episodes=1):
     myEnv = RDDLEnv.RDDLEnv(domain=EnvInfo.get_domain(),
                             instance=EnvInfo.get_instance(inst),
                             enforce_action_constraints=False,
-                            debug=False,
+                            debug=True,
                             log=log,
                             simlogname=method_name)
+                            # backend=JaxRDDLSimulator)
+
+    # initialization of the method init timer
     budget = myEnv.Budget
+    init_budget = HOUR
+    init_timed_out = False
+    signal.signal(signal.SIGALRM, signal_handler)
 
     # default noop agent, do not change
     defaultAgent = NoOpAgent(action_space=myEnv.action_space,
                         num_actions=myEnv.numConcurrentActions)
 
-    ################################################################
-    # Initialize your agent here:
-    agent = MyRDDLAgent(action_space=myEnv.action_space,
-                        num_actions=myEnv.numConcurrentActions)
+    signal.setitimer(signal.ITIMER_REAL, init_budget)
+    start = time.time()
+    try:
+        ################################################################
+        # Initialize your agent here:
+        agent = MyRDDLAgent(action_space=myEnv.action_space,
+                            num_actions=myEnv.numConcurrentActions)
 
 
-    ################################################################
-
+        ################################################################
+    except:
+        finish = time.time()
+        print('Timed out! (', finish - start, ' seconds)')
+        print('This domain will continue exclusively with default actions!')
+        init_timed_out = True
 
     signal.signal(signal.SIGALRM, signal_handler)
 
     for episode in range(episodes):
         total_reward = 0
         state = myEnv.reset()
-        timed_out = False
+        timed_out = False if init_timed_out==False else True
         elapsed = budget
-        finish = start = 0
+        start = 0
         for step in range(myEnv.horizon):
 
             # action selection:
             if not timed_out:
                 signal.setitimer(signal.ITIMER_REAL, elapsed)
+                start = time.time()
                 try:
-                    start = time.time()
                     #################################################################
                     # replace the following line of code with your agent call
                     action = agent.sample_action()
@@ -74,7 +90,8 @@ def main(env, inst, method_name=None, episodes=1):
                     #################################################################
                     finish = time.time()
                 except:
-                    print('Timed out!')
+                    finish = time.time()
+                    print('Timed out! (', finish-start, ' seconds)')
                     print('This episode will continue with default actions!')
                     action = defaultAgent.sample_action()
                     timed_out = True
