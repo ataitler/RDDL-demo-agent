@@ -1,7 +1,7 @@
 import sys
 import signal
 import time
-sys.path.append('/home/test/pyRDDLGym')
+# sys.path.append('/home/test/pyRDDLGym')
 
 from pyRDDLGym import RDDLEnv
 from pyRDDLGym import ExampleManager
