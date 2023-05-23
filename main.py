@@ -71,7 +71,8 @@ def main(env, inst, method_name=None, episodes=1):
     for episode in range(episodes):
         total_reward = 0
         state = myEnv.reset()
-        timed_out = False if init_timed_out==False else True
+        # timed_out = False if init_timed_out==False else True
+        timed_out = False
         elapsed = budget
         start = 0
         for step in range(myEnv.horizon):
