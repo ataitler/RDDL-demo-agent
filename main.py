@@ -1,7 +1,7 @@
 import sys
 import signal
 import time
-# sys.path.append('/home/test/pyRDDLGym')
+sys.path.append('/home/test/pyRDDLGym')
 
 from pyRDDLGym import RDDLEnv
 from pyRDDLGym import ExampleManager
@@ -13,6 +13,7 @@ from pyRDDLGym.Policies.Agents import NoOpAgent
 ############################################################
 # IMPORT THE AGENT AND OTHER DEPENDENCIES OF YOUR SOLUTION #
 from MyAgent.Agent import NoOpAgent as MyRDDLAgent
+# from MyAgent.Agent import RandomAgent as MyRDDLAgent
 
 
 
@@ -50,7 +51,8 @@ def main(env, inst, method_name=None, episodes=1):
     defaultAgent = NoOpAgent(action_space=myEnv.action_space,
                         num_actions=myEnv.numConcurrentActions)
 
-    signal.setitimer(signal.ITIMER_REAL, init_budget)
+    # signal.setitimer(signal.ITIMER_REAL, init_budget)
+    signal.setitimer(signal.ITIMER_REAL, 5)
     start = time.time()
     try:
         ################################################################
@@ -71,7 +73,6 @@ def main(env, inst, method_name=None, episodes=1):
     for episode in range(episodes):
         total_reward = 0
         state = myEnv.reset()
-        # timed_out = False if init_timed_out==False else True
         timed_out = False
         elapsed = budget
         start = 0
@@ -90,6 +91,7 @@ def main(env, inst, method_name=None, episodes=1):
 
                     #################################################################
                     finish = time.time()
+                    signal.setitimer(signal.ITIMER_REAL, 0)
                 except:
                     finish = time.time()
                     print('Timed out! (', finish-start, ' seconds)')
